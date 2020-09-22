@@ -4,6 +4,7 @@ const app = express()
 const port = 3001
 
 const blog_model = require('./blog_model')
+const db = require('./blog_model')
 
 app.use(express.json())
 app.use(function (req, res, next) {
@@ -23,6 +24,17 @@ app.get('/', (req, res) => {
   })
 })
 
+app.get('/blog/:id', (req, res) => {
+  blog_model.getBlogByID(req.params.id)
+  .then(response => {
+    res.status(200).send(response);
+  })
+  .catch(error => {
+    res.status(500).send(error);
+  })
+})
+
+
 app.post('/blogs', (req, res) => {
   blog_model.createBlog(req.body)
   .then(response => {
@@ -35,7 +47,7 @@ app.post('/blogs', (req, res) => {
   })
 })
 
-app.delete('/blogs/:id', (req, res) => {
+app.delete('/blog/:id', (req, res) => {
   blog_model.deleteBlog(req.params.id)
   .then(response => {
     res.status(200).send(response);

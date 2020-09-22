@@ -1,3 +1,5 @@
+const { request } = require('express');
+
 const Pool = require('pg').Pool
 //this is bad, don't do this in prod. very bad
 const pool = new Pool({
@@ -19,12 +21,24 @@ const getBlogs = () => {
   })
 }
 
+const getBlogByID = (id) => {
+  return new Promise(function(resolve, reject) {
+    const blogId = id
+    pool.query('SELECT * FROM blogs WHERE id = $1', [blogId], (error, results) => {
+      if (error) {
+        console.log('THERE WAS AN ERROR' + error);
+        reject(error)
+      }
+      resolve(results.rows);
+    })
+  })
+}
+
 const createBlog = (body) => {
   return new Promise(function(resolve, reject) {
     const { title, content } = body
     pool.query('INSERT INTO blogs (title, content) VALUES ($1, $2) RETURNING *', [title, content], (error, results) => {
       if (error) {
-        console.log('Error ' + error);
         reject(error)
       }
       resolve(`A new blog has been added added: ${results.rows[0]}`)
@@ -32,10 +46,10 @@ const createBlog = (body) => {
   })
 }
 
-const deleteBlog = () => {
+const deleteBlog = (id) => {
   return new Promise(function(resolve, reject) {
-    const id = parseInt(request.params.id)
-    pool.query('DELETE FROM blogs WHERE id = $1', [id], (error, results) => {
+    const blogId = id
+    pool.query('DELETE FROM blogs WHERE id = $1', [blogId], (error, results) => {
       if (error) {
         reject(error)
       }
@@ -46,6 +60,7 @@ const deleteBlog = () => {
 
 module.exports = {
   getBlogs,
+  getBlogByID,
   createBlog,
   deleteBlog,
 }
