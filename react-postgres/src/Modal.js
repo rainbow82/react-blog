@@ -2,6 +2,7 @@ import React, {useState, useCallback, useEffect} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Modal from '@material-ui/core/Modal';
 import Button from '@material-ui/core/Button';
+import useFetchBlogs from './hooks';
 
 function rand() {
   return Math.round(Math.random() * 20) - 10;
@@ -30,7 +31,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const NewBlogModal = () => {
-  const [blogList, setBlogs] = useState([]);
+  const { status, blogs } = useFetchBlogs();
+  const [blogList, setBlogs] = useState(blogs);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const classes = useStyles();
@@ -43,19 +45,8 @@ const NewBlogModal = () => {
   };
 
   const handleClose = () => {
-    getBlogs();
     setOpen(false);
   };
-
-  const getBlogs = useCallback(async () => {
-    const result = await fetch (
-      'http://localhost:3001'
-    );
-    if(result.ok) {
-      const blogs = await result.json();
-      setBlogs(blogs);
-    }
-  }, []);
 
   const createBlog = () => {
     fetch('http://localhost:3001/blogs', {
@@ -70,7 +61,6 @@ const NewBlogModal = () => {
       })
       .then(data => {
         alert(data);
-        getBlogs();
       });
   }
 

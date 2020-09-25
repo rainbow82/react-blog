@@ -1,22 +1,10 @@
 import React, {useState, useEffect, useCallback} from 'react'
 import NewBlogModal from './Modal'
+import useFetchBlogs from './hooks'
 
 const BlogList = () => {
-  const [blogList, setBlogs] = useState([]);
-
-  const getBlogs = useCallback(async () => {
-    const result = await fetch (
-      'http://localhost:3001'
-    );
-    if(result.ok) {
-      const blogs = await result.json();
-      setBlogs(blogs);
-    }
-  }, []);
-
-  useEffect(() => {
-    getBlogs();
-  }, []);
+  const { status, blogs } = useFetchBlogs();
+  const [blogList, setBlogs] = useState(blogs);
 
   return (
     <div>
