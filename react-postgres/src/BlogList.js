@@ -1,10 +1,8 @@
 import React, {useState, useEffect, useCallback} from 'react'
-import Modal from './Modal'
-import useModal from './useModal'
+import NewBlogModal from './Modal'
 
 const BlogList = () => {
   const [blogList, setBlogs] = useState([]);
-  const {isShowing, toggle} = useModal();
 
   const getBlogs = useCallback(async () => {
     const result = await fetch (
@@ -20,25 +18,6 @@ const BlogList = () => {
     getBlogs();
   }, []);
 
-  const createBlog = () => {
-    let title= prompt('Enter blog name');
-    let content = prompt('Enter blog content');
-    fetch('http://localhost:3001/blogs', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({title, content}),
-    })
-      .then(response => {
-        return response.text();
-      })
-      .then(data => {
-        alert(data);
-        getBlogs();
-      });
-  }
-
   return (
     <div>
       <div>
@@ -50,12 +29,7 @@ const BlogList = () => {
           </h1>
         ))}
       </div>
-      <button className="button-default" onClick={toggle}>Show Modal</button>
-      <Modal
-        isShowing={isShowing}
-        hide={toggle}
-        createBlog={createBlog}
-      />
+      <NewBlogModal />
     </div>
   )
 }
